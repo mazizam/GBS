@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "list.h"
 #include <stdio.h>
+
 struct list_elem *first(list_t *list, char *data);
 void print_string(char *data);
 list_t   *list_init (){
@@ -30,13 +31,23 @@ return element_to_add;
 }
 
 int list_remove (list_t *list, struct list_elem *elem){
-      if (list==NULL) return NULL;
+      if (list==NULL||elem==NULL) return -1;
 struct list_elem * element=list->first;
 while(element!=NULL&&element!=elem){
-if (element->next==elem) element->next=elem->next;
+if (element->next==elem){
+element->next=elem->next;
+if (list->last==elem) list->last=element;
+element=elem;
+}else
 element=element->next;
 }
-if (element!=NULL) {element->next=NULL;
+
+if (element!=NULL) {
+    if (list->first==element)list->first=element->next;
+if (list->last==element)list->last=NULL; 
+
+free(element);
+
 return 0;}
 return -1;
 }
@@ -45,18 +56,16 @@ void  list_finit (list_t *list){
       if (list==NULL) return ;
 struct list_elem *e, *element=list->first;
 while(element!=NULL){
-e=element;
-element->next=NULL;
+e=element->next;
+free(element);
 element=e;
 }
-list->first=NULL;
-list->last=NULL;
-
+free(list);
 }
 struct list_elem *list_find (list_t *list, char *data, int (*cmp_elem) (const char *, const char *)){
   if (list==NULL) return NULL;
 struct list_elem * element=list->first;
-while(element!=NULL&&!cmp_elem(data,element->data)){
+while((element!=NULL)&&cmp_elem(data,element->data)!=0){
     element=element->next;
 }
 return element;
@@ -67,19 +76,18 @@ void   list_print (list_t *list, void (*print_elem) (char *)){
 struct list_elem *e,*element=list->first;
 int i=0;
 while(element!=NULL){
-    if(i++)printf("\n%d:",i);
-else printf("%d:",i);
+printf("%d:",++i);
 print_elem(element->data);
+printf("\n");
 e=element;
 element=element->next;
-free(e);
 }
 
 
 }
 
 void print_string(char *data){
-    printf(data);
+    printf("%s",data);
 }
 
 struct list_elem *first (list_t *list, char *data){
