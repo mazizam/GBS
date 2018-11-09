@@ -31,10 +31,12 @@ list_t *list=malloc(sizeof(list_t));
   struct timeval tv;
   int boolean,b2=0;
 for(int i=0;i<N;i++){
+
 if (b2)continue;
-if (!(boolean=fork())) b2=1;
 gettimeofday(&tv,NULL);
+
   print_date("Start: ",(&tv)->tv_sec);
+if (!(boolean=fork())) {b2=1;continue;}
 }
 
 for(i=0;boolean&&i<N;i++)
@@ -51,7 +53,7 @@ list_remove(list,list->first);
 free(list);
 return 0;}
 int kp=K;
-if (r) {printf("r");
+if (r) {
 srand(getpid());
 kp=(int)((rand()%(3*K/2-K/2))+((double)K)/2+1);
 }
